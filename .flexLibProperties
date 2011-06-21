@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<flexLibProperties includeAllClasses="true" useMultiPlatformConfig="false" version="3">
+  <includeClasses>
+    <classEntry path="com.ithaca.traces.Resource"/>
+    <classEntry path="com.ithaca.traces.Base"/>
+    <classEntry path="com.ithaca.traces.Ktbs"/>
+    <classEntry path="com.ithaca.traces.Trace"/>
+    <classEntry path="com.ithaca.traces.Model"/>
+    <classEntry path="com.ithaca.traces.ObselType"/>
+    <classEntry path="com.ithaca.traces.AttributeType"/>
+    <classEntry path="com.ithaca.traces.RelationType"/>
+    <classEntry path="com.ithaca.traces.Obsel"/>
+  </includeClasses>
+  <includeResources/>
+  <namespaceManifests/>
+</flexLibProperties>
