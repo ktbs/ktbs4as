@@ -1,7 +1,8 @@
 package com.ithaca.traces
 {
-	import mx.utils.ObjectProxy;
 	import flash.events.Event;
+	
+	import mx.utils.ObjectProxy;
 	
 	public class Resource extends ObjectProxy
 	{
@@ -50,11 +51,12 @@ package com.ithaca.traces
 
 		public function set uri(value:String):void
 		{
-			if( _uri !== value)
+			if( _uri !== value && Resource.isUriWellFormed(value))
 			{
 				_uri = value;
 				dispatchEvent(new Event("uriChange"));
 			}
+			//TODO : do something when uri is not well formed
 		}
 
 		[Bindable(event="sync_statusChange")]
@@ -70,6 +72,12 @@ package com.ithaca.traces
 				_sync_status = value;
 				dispatchEvent(new Event("sync_statusChange"));
 			}
+		}
+		
+		public static function isUriWellFormed(value:String):Boolean
+		{
+			//TODO
+			return true;	
 		}
 
 	}
