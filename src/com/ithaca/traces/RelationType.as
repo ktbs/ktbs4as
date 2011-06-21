@@ -2,9 +2,9 @@ package com.ithaca.traces
 {
 	public class RelationType extends Resource
 	{
-		public function RelationType(item:Object=null, uid:String=null, proxyDepth:int=-1)
+		public function RelationType(uri:String=null, uri_attribution_policy:String = null)
 		{
-			super(item, uid, proxyDepth);
+			super(uri, uri_attribution_policy);
 		}
 	}
 }

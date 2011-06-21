@@ -12,6 +12,7 @@ package com.ithaca.traces
 		
 		public function Ktbs(uri:String=null, uri_attribution_policy:String = null)
 		{
+			super(uri, uri_attribution_policy);
 			
 			
 		}

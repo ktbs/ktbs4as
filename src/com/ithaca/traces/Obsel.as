@@ -2,9 +2,9 @@ package com.ithaca.traces
 {
 	public class Obsel extends Resource
 	{
-		public function Obsel(item:Object=null, uid:String=null, proxyDepth:int=-1)
+		public function Obsel(uri:String=null, uri_attribution_policy:String = null)
 		{
-			super(item, uid, proxyDepth);
+			super(uri, uri_attribution_policy);
 		}
 	}
 }

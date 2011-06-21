@@ -12,15 +12,31 @@ package com.ithaca.traces
 		public static var RESOURCE_SYNC_STATUS_ERROR:String = "error";
 		public static var RESOURCE_SYNC_STATUS_UNKNOWN:String = "unknown";
 		
+		public static var RESOURCE_URI_ATTRIBUTION_POLICY_CLIENT_IS_KING:String = "clientIsKing";
+		public static var RESOURCE_URI_ATTRIBUTION_SERVER_ATTRIBUTED:String = "clientIsKing";
+		
 		public static var RESOURCE_DEFAULT_LABEL_VALUE:String = "noname";
 		
 		protected var _uri:String;
 		protected var _sync_status:String = Resource.RESOURCE_SYNC_STATUS_UNKNOWN;
 		protected var _label:String = RESOURCE_DEFAULT_LABEL_VALUE;
 		
-		public function Resource(item:Object=null, uid:String=null, proxyDepth:int=-1)
+		public var uri_attribution_policy:String = Resource.RESOURCE_URI_ATTRIBUTION_POLICY_CLIENT_IS_KING;
+		
+		public function Resource(uri:String=null, uri_attribution_policy:String = null)
 		{
-			super(item, uid, proxyDepth);
+			super();
+			
+			if(uri_attribution_policy)
+				this.uri_attribution_policy = uri_attribution_policy;
+			
+			if(uri)
+				this.uri = uri;
+			else if(this.uri_attribution_policy == Resource.RESOURCE_URI_ATTRIBUTION_POLICY_CLIENT_IS_KING)
+				this.uri = this.uid;
+			else
+				;//TODO
+			
 		}
 
 		[Bindable(event="labelChange")]
