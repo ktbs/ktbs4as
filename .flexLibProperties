@@ -10,6 +10,11 @@
     <classEntry path="com.ithaca.traces.AttributeType"/>
     <classEntry path="com.ithaca.traces.RelationType"/>
     <classEntry path="com.ithaca.traces.Obsel"/>
+    <classEntry path="com.ithaca.traces.ComputedTrace"/>
+    <classEntry path="com.ithaca.traces.StoredTrace"/>
+    <classEntry path="com.ithaca.traces.Method"/>
+    <classEntry path="com.ithaca.traces.Attribute"/>
+    <classEntry path="com.ithaca.traces.Relation"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>
