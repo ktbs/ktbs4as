@@ -1,7 +1,8 @@
 package com.ithaca.traces
 {
-	import mx.utils.ObjectProxy;
 	import flash.events.Event;
+	
+	import mx.utils.ObjectProxy;
 	
 	public class Relation extends ObjectProxy
 	{
@@ -9,7 +10,7 @@ package com.ithaca.traces
 		protected var _originObsel:Obsel;
 		protected var _targetObsel:Obsel;
 		
-		public function Relation(relationType:RelationType, targetObsel:Obsel, originObsel:Obsel = null)
+		public function Relation(relationType:RelationType, originObsel:Obsel = null, targetObsel:Obsel = null)
 		{
 			this._relationType = relationType;
 			this._originObsel = originObsel;
@@ -32,6 +33,14 @@ package com.ithaca.traces
 		{
 			if( _originObsel !== value)
 			{
+				if(_originObsel)
+				{
+					_originObsel.unregisterRelation(this);
+					
+					if(_targetObsel)
+						_targetObsel.outcomingRelationChange(this);
+				}			
+				
 				_originObsel = value;
 				dispatchEvent(new Event("originObselChange"));
 			}
@@ -48,6 +57,14 @@ package com.ithaca.traces
 		{
 			if( _targetObsel !== value)
 			{
+				if(_targetObsel)
+				{
+					_targetObsel.unregisterRelation(this);
+					
+					if(_originObsel)
+						_originObsel.incomingRelationChange(this);
+				}
+				
 				_targetObsel = value;
 				dispatchEvent(new Event("targetObselChange"));
 			}

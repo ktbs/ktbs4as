@@ -34,7 +34,6 @@ package com.ithaca.traces
 							  subject:String = null,
 							  attributes:Array = null,
 							  relations:Array = null,
-							  inverse_relations:Array = null,
 							  source_obsels:Array = null)
 		{
 			
@@ -54,6 +53,10 @@ package com.ithaca.traces
 			//Attributes
 			for each(var a:Attribute in attributes)
 				this.registerAttribute(a,false,true);
+				
+			//Relations
+			for each(var r:Relation in relations)
+				this.registerRelation(r,true);
 				
 			//Source Obsels
 			for each(var os:Obsel in source_obsels)
@@ -254,21 +257,24 @@ package com.ithaca.traces
 			return toReturn;
 		}
 		
-		
+		[Bindable(event="outcomingRelationsChange")]
 		public function getRelatedObsels(rt:RelationType):Array
 		{	
-			if(this.mapOutcomingRelations.hasOwnProperty(rt))
-				return (this.mapIncomingRelations[rt] as Array)
+			var ar:Array = [];
+			for each(var rel:Relation in this.getOutcomingRelations(rt))
+				ar.push(rel.targetObsel);
 			
-			return null;	
+			return ar;	
 		}
 		
+		[Bindable(event="incomingRelationsChange")]
 		public function getRelatingObsels(rt:RelationType):Array
 		{	
-			if(this.mapIncomingRelations.hasOwnProperty(rt))
-				return (this.mapOutcomingRelations[rt] as Array)
+			var ar:Array = [];
+			for each(var rel:Relation in this.getIncomingRelations(rt))
+				ar.push(rel.originObsel);
 			
-			return null;	
+			return ar;	
 		}
 		
 		public function getIncomingRelations(rt:RelationType):Array
@@ -300,71 +306,9 @@ package com.ithaca.traces
 			{
 				var newRelation:Relation = new Relation(rt,this,targetObsel); 
 				
-				this.outcomingRelations.addItem(newRelation);
+				this.registerRelation(newRelation)
 				
-				if(this.mapOutcomingRelations.hasOwnProperty(rt) && this.mapOutcomingRelations[rt] != null)
-					(this.mapOutcomingRelations[rt] as Array).push(newRelation);
-				else
-				{
-					this.mapOutcomingRelations[rt] = [newRelation];
-					this.dispatchEvent(new Event("outcomingRelationTypesChange"));
-				}
-				
-				
-				this.dispatchEvent(new Event("outcomingRelationsChange"));
-				
-				
-				targetObsel.registerIncomingRelation(newRelation);
-			}
-		}
-		
-		public function registerIncomingRelation(rel:Relation):void
-		{
-			var alreadyExist:Boolean = false;
-			
-			for each(var aRelation:Relation in this.getIncomingRelations(rel.relationType))
-				if(aRelation.originObsel == rel.originObsel)
-					alreadyExist = true;
-			
-			if(!alreadyExist)
-			{ 
-				
-				this.incomingRelations.addItem(rel);
-				
-				if(this.mapIncomingRelations.hasOwnProperty(rel.relationType) && this.mapIncomingRelations[rel.relationType] != null)
-					(this.mapIncomingRelations[rel.relationType] as Array).push(rel);
-				else
-				{
-					this.mapIncomingRelations[rel.relationType] = [rel];
-					this.dispatchEvent(new Event("incomingRelationTypesChange"));
-				}
-				
-				this.dispatchEvent(new Event("incomingRelationsChange"));
-				
-			}
-			
-		}
-		
-		public function unregisterIncomingRelation(rel:Relation):void
-		{
-			var rels:Array = this.getIncomingRelations(rel.relationType);
-			
-			for(var i:uint = 0; i < rels.length; i++)
-			{
-				var aRelation:Relation = rels[i] as Relation;
-				
-				if(aRelation.originObsel == rel.originObsel)
-				{	
-					this.incomingRelations.removeItemAt(this.incomingRelations.getItemIndex(aRelation));
-					this.dispatchEvent(new Event("incomingRelationsChange"));	
-					
-					rels.splice(i,1);
-					if(rels.length == 0)
-					{
-						delete this.mapIncomingRelations[rel.relationType];
-						this.dispatchEvent(new Event("incomingRelationTypesChange"));
-					}
-				}
+				targetObsel.registerRelation(newRelation);
 			}
 		}
 		
@@ -379,20 +323,114 @@ package com.ithaca.traces
 				
 				if(aRelation.targetObsel == targetObsel)
 				{
-					targetObsel.unregisterIncomingRelation(aRelation);
+					this.unregisterRelation(aRelation);
 					
-					this.outcomingRelations.removeItemAt(this.outcomingRelations.getItemIndex(aRelation));
-					this.dispatchEvent(new Event("outcomingRelationsChange"));
+					targetObsel.unregisterRelation(aRelation);
 					
+					return;
+				}
+			}
+		}
+
+		
+		public function registerRelation(rel:Relation, silent:Boolean = false):void
+		{
+			
+			//the relation is maybe not completely initialized  
+			if(rel.originObsel == null && rel.targetObsel != null && rel.targetObsel != this)
+				rel.originObsel = this;
+			else if(rel.targetObsel == null && rel.originObsel != null && rel.originObsel != this)
+				rel.targetObsel = this;
+			else
+				return; //Error
+			
+			//is the relation incoming or outcoming ?
+			var incoming:Boolean;			
+			if(rel.originObsel == this)
+				incoming = false;
+			else if(rel.targetObsel == this)
+				incoming = true;
+			else
+				return; //Error
+		
+			//Searching if a similar relation is not already registered 
+			var alreadyExist:Boolean = false;
+			var typeRelations:Array = incoming ? this.getIncomingRelations(rel.relationType) : this.getOutcomingRelations(rel.relationType);
+			
+			for each(var aRelation:Relation in typeRelations)
+				if((incoming && aRelation.originObsel == rel.originObsel) || (!incoming && aRelation.targetObsel == rel.targetObsel)  )
+					alreadyExist = true;
+			
+			//if nothing is found
+			if(!alreadyExist)
+			{ 
+				var relationTypesChangeEventMessage:String = incoming ? "incomingRelationTypesChange" : "outcomingRelationTypesChange";
+				var relationsChangeEventMessage:String = incoming ? "incomingRelationsChange" : "outcomingRelationsChange";
+				var mapRelations:Dictionary = incoming ? this.mapIncomingRelations : this.mapOutcomingRelations;
+				var arRelations:ArrayCollection = incoming ? this.incomingRelations : this.outcomingRelations;
+				
+				arRelations.addItem(rel);
+				
+				if(mapRelations.hasOwnProperty(rel.relationType) && mapRelations[rel.relationType] != null)
+					(mapRelations[rel.relationType] as Array).push(rel);
+				else
+				{
+					mapRelations[rel.relationType] = [rel];
+					if(!silent) this.dispatchEvent(new Event(relationTypesChangeEventMessage));
+				}
+				
+				if(!silent) this.dispatchEvent(new Event(relationsChangeEventMessage));
+				
+			}
+			
+		}
+		
+		public function unregisterRelation(rel:Relation, silent:Boolean = false):void
+		{
+			//is the relation incoming or outcoming ?
+			var incoming:Boolean;			
+			if(rel.originObsel == this)
+				incoming = false;
+			else if(rel.targetObsel == this)
+				incoming = true;
+			else
+				return;
+			
+			
+			var relationTypesChangeEventMessage:String = incoming ? "incomingRelationTypesChange" : "outcomingRelationTypesChange";
+			var relationsChangeEventMessage:String = incoming ? "incomingRelationsChange" : "outcomingRelationsChange";
+			var mapRelations:Dictionary = incoming ? this.mapIncomingRelations : this.mapOutcomingRelations;
+			var arRelations:ArrayCollection = incoming ? this.incomingRelations : this.outcomingRelations;
+			var typeRelations:Array = incoming ? this.getIncomingRelations(rel.relationType) : this.getOutcomingRelations(rel.relationType);
+			
+			for(var i:uint = 0; i < typeRelations.length; i++)
+			{
+				var aRelation:Relation = typeRelations[i] as Relation;
+				
+				if((incoming && aRelation.originObsel == rel.originObsel) || (!incoming && aRelation.targetObsel == rel.targetObsel))
+				{	
+					arRelations.removeItemAt(arRelations.getItemIndex(aRelation));
+					if(!silent) this.dispatchEvent(new Event(relationsChangeEventMessage));	
 					
-					rels.splice(i,1);
-					if(rels.length == 0)
+					typeRelations.splice(i,1);
+					if(typeRelations.length == 0)
 					{
-						delete this.mapOutcomingRelations[rt];
-						this.dispatchEvent(new Event("outcomingRelationTypesChange"));
+						delete mapRelations[rel.relationType];
+						if(!silent) this.dispatchEvent(new Event(relationTypesChangeEventMessage));
 					}
 				}
 			}
 		}
+		
+		public function incomingRelationChange(changingRelation:Relation):void
+		{
+			this.dispatchEvent(new Event("incomingRelationsChange"));
+		}
+		
+		public function outcomingRelationChange(changingRelation:Relation):void
+		{
+			this.dispatchEvent(new Event("outcomingRelationsChange"));
+		}
+	
 	}
 }
