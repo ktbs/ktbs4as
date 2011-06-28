@@ -1,10 +1,51 @@
 package com.ithaca.traces
 {
 	public class AttributeType extends Resource
-	{
-		public function AttributeType(uri:String=null, uri_attribution_policy:String = null)
+	{	
+		protected var _model:Model;
+		protected var _domain:ObselType;
+		protected var _range:String;
+		protected var _isRangeList:Boolean;
+		
+		public function AttributeType(model:Model, domain:ObselType = null, range:String = null, range_is_list:Boolean = false, uri:String=null, uri_attribution_policy:String = null)
 		{
 			super(uri, uri_attribution_policy);
+			
+			_model = model;
+			_range = range;
+			_domain = domain;
+			_isRangeList = range_is_list;
+		}
+
+		public function get isRangeList():Boolean
+		{
+			return _isRangeList;
+		}
+
+		public function get range():String
+		{
+			return _range;
+		}
+
+		public function setRange(value:String, isList:Boolean = false):void
+		{
+			_range = value;
+			_isRangeList = isList;
+		}
+
+		public function get domain():ObselType
+		{
+			return _domain;
+		}
+
+		public function setDomain(value:ObselType):void
+		{
+			_domain = value;
+		}
+
+		public function get model():Model
+		{
+			return _model;
 		}
 	}
 }
