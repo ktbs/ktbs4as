@@ -1,5 +1,7 @@
 package com.ithaca.traces
 {
+	import flash.events.Event;
+	
 	import mx.collections.ArrayCollection;
 	import mx.collections.Sort;
 	import mx.collections.SortField;
@@ -9,12 +11,11 @@ package com.ithaca.traces
 	{
 			
 		protected var arBases:ArrayCollection;		
+
 		
 		public function Ktbs(uri:String=null, uri_attribution_policy:String = null)
 		{
 			super(uri, uri_attribution_policy);
-			
-			
 		}
 		
 		[Bindable("listBasesChange")]
@@ -25,10 +26,9 @@ package com.ithaca.traces
 		
 		public function getBase(uri:String):Base
 		{
-			if(Resource.isUriWellFormed(uri))
-				for each(var o:Object in arBases)
-					if(o is Base && (o as Base).uri == uri)
-						return o as Base;
+			for each(var o:Object in arBases)
+				if(o is Base && (o as Base).uri == uri)
+					return o as Base;
 			
 			return null;
 		}
@@ -36,6 +36,8 @@ package com.ithaca.traces
 		public function createBase(uri:String = null):Base
 		{
 			var newBase:Base = new Base(uri,this.uri_attribution_policy);
+			arBases.addItem(newBase);
+			this.dispatchEvent(new Event("listBasesChange"));
 			return newBase;
 		}
 	}

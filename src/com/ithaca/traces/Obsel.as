@@ -74,7 +74,7 @@ package com.ithaca.traces
 			return _obselType;
 		}
 
-		[Bindable(event="beginChange")]
+		[Bindable]
 		public function get begin():int
 		{
 			return _begin;
@@ -85,11 +85,10 @@ package com.ithaca.traces
 			if( _begin !== value)
 			{
 				_begin = value;
-				dispatchEvent(new Event("beginChange"));
 			}
 		}
 
-		[Bindable(event="endChange")]
+		[Bindable]
 		public function get end():int
 		{
 			return _end;
@@ -100,10 +99,10 @@ package com.ithaca.traces
 			if( _end !== value)
 			{
 				_end = value;
-				dispatchEvent(new Event("endChange"));
 			}
 		}
 
+		[Bindable]
 		public function get subject():String
 		{
 			return _subject;
@@ -258,7 +257,7 @@ package com.ithaca.traces
 		}
 		
 		[Bindable(event="outcomingRelationsChange")]
-		public function getRelatedObsels(rt:RelationType):Array
+		public function listRelatedObsels(rt:RelationType):Array
 		{	
 			var ar:Array = [];
 			for each(var rel:Relation in this.getOutcomingRelations(rt))
@@ -268,7 +267,7 @@ package com.ithaca.traces
 		}
 		
 		[Bindable(event="incomingRelationsChange")]
-		public function getRelatingObsels(rt:RelationType):Array
+		public function listRelatingObsels(rt:RelationType):Array
 		{	
 			var ar:Array = [];
 			for each(var rel:Relation in this.getIncomingRelations(rt))
@@ -277,6 +276,7 @@ package com.ithaca.traces
 			return ar;	
 		}
 		
+		[Bindable(event="incomingRelationsChange")]
 		public function getIncomingRelations(rt:RelationType):Array
 		{
 			if(this.mapIncomingRelations.hasOwnProperty(rt) && this.mapIncomingRelations[rt] != null && this.mapIncomingRelations[rt] is Array)
@@ -285,6 +285,7 @@ package com.ithaca.traces
 			return [];
 		}
 		
+		[Bindable(event="outcomingRelationsChange")]
 		public function getOutcomingRelations(rt:RelationType):Array
 		{
 			if(this.mapOutcomingRelations.hasOwnProperty(rt) && this.mapOutcomingRelations[rt] != null && this.mapOutcomingRelations[rt] is Array)

@@ -63,6 +63,7 @@ package com.ithaca.traces
 			return internal_listAllSubtypes();
 		}
 		
+		[Bindable(event="listAttributeTypesChange")]
 		public function listAttributeTypes(include_inherited:Boolean = true):Array
 		{
 			if(include_inherited == false)
@@ -73,7 +74,8 @@ package com.ithaca.traces
 			}
 		}
 		
-		public function listIncomingRelationsTypes(include_inherited:Boolean = true):Array
+		[Bindable(event="listIncomingRelationTypesChange")]
+		public function listIncomingRelationTypes(include_inherited:Boolean = true):Array
 		{
 			if(include_inherited == false)
 				return _directIncomingRelationsTypes;
@@ -83,6 +85,7 @@ package com.ithaca.traces
 			}
 		}
 		
+		[Bindable(event="listOutcomingRelationTypesChange")]
 		public function listOutcomingRelationsTypes(include_inherited:Boolean = true):Array
 		{
 			if(include_inherited == false)
@@ -97,7 +100,7 @@ package com.ithaca.traces
 		{
 			//TODO : check if uri not taken and similar type not already declared
 			var at:AttributeType = _model.createAttributeType(uri, this, range, range_is_list);
-			this._directAttributeTypes.push(at);
+			//here the constructor of the attributeType order the registration of the new attributeType in domain obselTypes
 			return at;
 		}
 		
@@ -105,8 +108,70 @@ package com.ithaca.traces
 		{
 			//TODO : check if uri not taken and similar type not already declared
 			var rt:RelationType = _model.createRelationType(uri,this,range,supertypes);
-			this._directOutcomingRelationsTypes.push(rt);
+			//here the constructor of the relationType order the registration of the new relationType in both range and domain obselTypes
 			return rt;
+		}
+		
+		public function registerAttributeType(at:AttributeType, silent:Boolean = false):void //called by AttributeType when its domain changes
+		{
+			if(this._directAttributeTypes.indexOf(at) < 0)
+			{
+				this._directAttributeTypes.push(at);
+				if(!silent) this.onPropertyChange("listAttributeTypesChange","listAttributeTypesChange",true);
+			}
+		}
+		
+		public function unRegisterAttributeType(rt:AttributeType, silent:Boolean = false):void //called by AttributeType when its domain changes
+		{
+			var pos:int = this._directAttributeTypes.indexOf(rt); 
+			if(pos > 0)
+			{
+				this._directAttributeTypes.splice(pos,1);
+				if(!silent) this.onPropertyChange("listAttributeTypesChange","listAttributeTypesChange",true);
+			}
+		}
+		
+		public function registerRelationType(rt:RelationType, silent:Boolean = false):void //called by RelationType when its domain or range changes
+		{
+			var incoming:Boolean;
+			
+			if(rt.domain == this)
+				incoming = false;
+			else if(rt.range == this)
+				incoming = true;
+			else
+				return;
+			
+			var arrayOfRelations:Array = incoming ? this._directIncomingRelationsTypes : this._directOutcomingRelationsTypes;
+			var message:String = incoming ? "listIncomingRelationTypesChange" : "listOutcomingRelationTypesChange";
+			
+			if(arrayOfRelations.indexOf(rt) < 0)
+			{
+				arrayOfRelations.push(rt);
+				if(!silent) this.onPropertyChange(message,message,true);
+			}
+		}
+		
+		public function unRegisterRelationType(rt:RelationType, silent:Boolean = false):void //called by RelationType when its domain or range changes
+		{
+			var incoming:Boolean;
+			
+			if(rt.domain == this)
+				incoming = false;
+			else if(rt.range == this)
+				incoming = true;
+			else
+				return;
+			
+			var arrayOfRelations:Array = incoming ? this._directIncomingRelationsTypes : this._directOutcomingRelationsTypes;
+			var message:String = incoming ? "listIncomingRelationTypesChange" : "listOutcomingRelationTypesChange";
+			
+			var pos:int = arrayOfRelations.indexOf(rt); 
+			if( pos > 0)
+			{
+				arrayOfRelations.splice(pos,1);
+				if(!silent) this.onPropertyChange(message,message,true);
+			}
 		}
 	}
 }

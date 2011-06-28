@@ -13,7 +13,7 @@ package com.ithaca.traces
 			
 			_model = model;
 			_range = range;
-			_domain = domain;
+			this.setDomain(domain)
 			_isRangeList = range_is_list;
 		}
 
@@ -40,7 +40,16 @@ package com.ithaca.traces
 
 		public function setDomain(value:ObselType):void
 		{
-			_domain = value;
+			if(_domain != value)
+			{
+				if(_domain)
+					_domain.unRegisterAttributeType(this);
+				
+				_domain = value;
+				
+				if(_domain)
+					_domain.registerAttributeType(this);
+			}	
 		}
 
 		public function get model():Model

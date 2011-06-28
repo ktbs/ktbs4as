@@ -11,9 +11,11 @@ package com.ithaca.traces
 		public static var RESOURCE_SYNC_STATUS_UNSYNCHRONIZED:String = "unsynchronized";
 		public static var RESOURCE_SYNC_STATUS_ERROR:String = "error";
 		public static var RESOURCE_SYNC_STATUS_UNKNOWN:String = "unknown";
+		public static var RESOURCE_SYNC_STATUS_WAITING:String = "waiting";
+		public static var RESOURCE_SYNC_STATUS_NOSERVER:String = "noserver";
 		
 		public static var RESOURCE_URI_ATTRIBUTION_POLICY_CLIENT_IS_KING:String = "clientIsKing";
-		public static var RESOURCE_URI_ATTRIBUTION_SERVER_ATTRIBUTED:String = "clientIsKing";
+		public static var RESOURCE_URI_ATTRIBUTION_SERVER_ATTRIBUTED:String = "serverAtributed";
 		
 		public static var RESOURCE_DEFAULT_LABEL_VALUE:String = "noname";
 		
@@ -25,7 +27,8 @@ package com.ithaca.traces
 		
 		public function Resource(uri:String=null, uri_attribution_policy:String = null)
 		{
-			super();
+		
+			//TODO : do something when uri is not well formed or the given uri already exists
 			
 			if(uri_attribution_policy)
 				this.uri_attribution_policy = uri_attribution_policy;
@@ -36,10 +39,12 @@ package com.ithaca.traces
 				this.uri = this.uid;
 			else
 				;//TODO
+
+			super();
 			
 		}
 
-		[Bindable(event="labelChange")]
+		[Bindable]
 		public function get label():String
 		{
 			return _label;
@@ -50,16 +55,15 @@ package com.ithaca.traces
 			if( _label !== value)
 			{
 				_label = value;
-				dispatchEvent(new Event("labelChange"));
 			}
 		}
 		
-		public function deleteLabel():void
+		public function delLabel():void
 		{
 			label = Resource.RESOURCE_DEFAULT_LABEL_VALUE;
 		}
 
-		[Bindable(event="uriChange")]
+		[Bindable]
 		public function get uri():String
 		{
 			return _uri;
@@ -67,15 +71,16 @@ package com.ithaca.traces
 
 		public function set uri(value:String):void
 		{
+			//TODO : do something when uri is not well formed or the given uri already exists
+			
 			if( _uri !== value && Resource.isUriWellFormed(value))
 			{
 				_uri = value;
-				dispatchEvent(new Event("uriChange"));
 			}
-			//TODO : do something when uri is not well formed
+			
 		}
 
-		[Bindable(event="sync_statusChange")]
+		[Bindable]
 		public function get sync_status():String
 		{
 			return _sync_status;
@@ -86,14 +91,19 @@ package com.ithaca.traces
 			if( _sync_status !== value)
 			{
 				_sync_status = value;
-				dispatchEvent(new Event("sync_statusChange"));
 			}
 		}
 		
 		public static function isUriWellFormed(value:String):Boolean
 		{
 			//TODO
-			return true;	
+			return true;
+			
+		}
+		
+		public function deleteResource():void
+		{
+			//TODO
 		}
 
 	}

@@ -50,7 +50,7 @@ package com.ithaca.traces
 			return _model;
 		}
 
-		[Bindable(event="originChange")]
+		[Bindable]
 		public function get origin():String
 		{
 			return _origin;
@@ -69,10 +69,30 @@ package com.ithaca.traces
 			return _arTraceTransformed;
 		}
 
-		[Bindable(event="arObselsChange")]
-		public function get arObsels():ArrayCollection
+		[Bindable]
+		public function get obsels():ArrayCollection
 		{
 			return _arObsels;
+		}	
+		
+		public function listObsels(begin:Number = NaN, end:Number = NaN, reverse:Boolean = false):Array
+		{
+			var ar:Array = [];
+			this._arObsels.refresh(); // we order the obsels by begin time
+			for each(var obs:Obsel in this._arObsels)
+			{
+				if(			(	isNaN(begin) || (!isNaN(obs.begin) && obs.begin > begin)	)
+						&& 	( 	isNaN(end) || (!isNaN(obs.end) && obs.end < end) || (!isNaN(obs.begin) && obs.begin < end)	)
+					)
+					{
+							ar.push(obs)		
+					}
+			}
+			
+			if(reverse) 
+				ar.reverse();
+					 
+			return ar;	
 		}
 		
 		public function getObsel(uri:String):Obsel

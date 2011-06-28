@@ -11,9 +11,10 @@ package com.ithaca.traces
 		protected var _unit:String;
 		protected var _readOnly:Boolean;
 		
-		public function Model(uri:String=null, uri_attribution_policy:String = null)
+		public function Model(base:Base, uri:String=null, uri_attribution_policy:String = null)
 		{
 			super(uri, uri_attribution_policy);
+			_base = base;
 		}
 		
 		public function get readOnly():Boolean
@@ -33,11 +34,11 @@ package com.ithaca.traces
 
 		public function set unit(value:String):void
 		{
-			//_unit = value;
+			_unit = value;
 			//TODO
 		}
 
-		
+
 		[Bindable(event="listInheritedChange")]
 		public function listInherited(include_inherited:Boolean = true):Array
 		{
@@ -52,6 +53,7 @@ package com.ithaca.traces
 			//TODO : check if uri not taken and similar type not already declared
 			var ot:ObselType = new ObselType(this, supertypes,uri,this.uri_attribution_policy);
 			this._directObselTypes.push(ot);
+			this.onPropertyChange("listObselTypesChange","listObselTypesChange",true);
 			return ot;
 		}
 
@@ -60,6 +62,7 @@ package com.ithaca.traces
 			//TODO : check if uri not taken and similar type not already declared
 			var at:AttributeType = new AttributeType(this, domain, range, range_is_list, uri,this.uri_attribution_policy);
 			this._directAttributeTypes.push(at);
+			this.onPropertyChange("listAttributeTypesChange","listAttributeTypesChange",true);
 			return at;
 		}
 		
@@ -68,9 +71,11 @@ package com.ithaca.traces
 			//TODO : check if uri not taken and similar type not already declared
 			var rt:RelationType = new RelationType(this,domain,range,supertypes,uri,this.uri_attribution_policy);
 			this._directRelationTypes.push(rt);
+			this.onPropertyChange("listRelationTypesChange","listRelationTypesChange",true);
 			return rt;
 		}
 		
+		[Bindable(event="listAttributeTypesChange")]
 		public function listAttributeTypes(include_inherited:Boolean = true):Array
 		{
 			//TODO : make the result of this function bindable
@@ -82,6 +87,7 @@ package com.ithaca.traces
 			}
 		}
 		
+		[Bindable(event="listRelationTypesChange")]
 		public function listRelationTypes(include_inherited:Boolean = true):Array
 		{
 			//TODO : make the result of this function bindable
@@ -93,6 +99,7 @@ package com.ithaca.traces
 			}
 		}
 		
+		[Bindable(event="listObselTypesChange")]
 		public function listObselTypes(include_inherited:Boolean = true):Array
 		{
 			//TODO : make the result of this function bindable
@@ -107,16 +114,19 @@ package com.ithaca.traces
 		public function addInherited(m:Model):void
 		{
 			this.internal_addSupertype(m);
+			this.onPropertyChange("listInheritedChange","listInheritedChange",true);
+	
 		}
 		
 		public function removeInherited(m:Model):void
 		{
 			this.internal_removeSupertype(m);
+			this.onPropertyChange("listInheritedChange","listInheritedChange",true);
 		}
 		
 		public function get(uri:String):Resource
 		{
-			//TODO : better
+			//TODO : more performant implementation
 			
 			for each(var elt:Resource in this.listAttributeTypes())
 				if(elt.uri == uri)

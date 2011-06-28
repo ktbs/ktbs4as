@@ -13,8 +13,8 @@ package com.ithaca.traces
 			super(uri, uri_attribution_policy,superTypes);
 			
 			_model = model;
-			_domain = domain;
-			_range = range;
+			this.setDomain(domain);
+			this.setRange(range);
 		}
 
 		public function get model():Model
@@ -30,7 +30,16 @@ package com.ithaca.traces
 		
 		public function setRange(value:ObselType):void
 		{
-			_range = value;
+			if(_range != value)
+			{
+				if(_range)
+					_range.unRegisterRelationType(this);
+				
+				_range = value;
+				
+				if(_range)
+					_range.registerRelationType(this);
+			}	
 		}
 		
 		public function get domain():ObselType
@@ -40,7 +49,16 @@ package com.ithaca.traces
 		
 		public function setDomain(value:ObselType):void
 		{
-			_domain = value;
+			if(_domain != value)
+			{
+				if(_domain)
+					_domain.unRegisterRelationType(this);
+				
+				_domain = value;
+				
+				if(_domain)
+					_domain.registerRelationType(this);
+			}	
 		}
 		
 		public function addSubtype(rt:RelationType):void
