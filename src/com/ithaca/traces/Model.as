@@ -15,6 +15,10 @@ package com.ithaca.traces
 		{
 			super(uri, uri_attribution_policy);
 			_base = base;
+			
+			_directAttributeTypes = new Array();
+			_directRelationTypes = new Array();
+			_directObselTypes = new Array();
 		}
 		
 		public function get readOnly():Boolean
@@ -87,6 +91,19 @@ package com.ithaca.traces
 			}
 		}
 		
+		[Bindable(event="listAttributeTypesChange")]
+		public function getAttributeTypesByName(name:String, include_inherited:Boolean = true):Array
+		{
+			var returnAr:Array = [];
+			for each (var atType:AttributeType in this.listAttributeTypes(include_inherited))
+			{
+				if(atType.label == name)
+					returnAr.push(atType);
+			}
+			
+			return returnAr; 
+		}
+		
 		[Bindable(event="listRelationTypesChange")]
 		public function listRelationTypes(include_inherited:Boolean = true):Array
 		{
@@ -109,6 +126,19 @@ package com.ithaca.traces
 			{
 				return listInheritedProperties(ObselType,"_directObselTypes",true);
 			}
+		}
+		
+		[Bindable(event="listObselTypesChange")]
+		public function getObselTypesByName(name:String, include_inherited:Boolean = true):Array
+		{
+			var returnAr:Array = [];
+			for each (var obsType:ObselType in this.listObselTypes(include_inherited))
+			{
+				if(obsType.label == name)
+					returnAr.push(obsType);
+			}
+			
+			return returnAr; 
 		}
 		
 		public function addInherited(m:Model):void

@@ -12,6 +12,10 @@ package com.ithaca.traces
 		{
 			super(uri, uri_attribution_policy,superTypes);
 			_model = model;	
+			
+			_directAttributeTypes = new Array();
+			_directOutcomingRelationsTypes = new Array();
+			_directIncomingRelationsTypes = new Array();
 		}
 		
 		public function get model():Model

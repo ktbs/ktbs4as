@@ -144,10 +144,12 @@ package com.ithaca.traces
 			for each(var otp:ExtensibleResource in this._directSuperTypes)
 				ar = ar.concat(otp.listInheritedProperties(propertyType,propertyContainerName,true));
 				
-			if(includeOwnProperties && this.hasOwnProperty(propertyContainerName) && this[propertyContainerName] && this[propertyContainerName] is Array)
+			if(includeOwnProperties && this[propertyContainerName] != null && this[propertyContainerName] is Array)
+			{
 				for each(var at:* in this[propertyContainerName])
 					if(at is propertyType)
-						ar.push(ar);
+						ar.push(at);
+			}
 			
 			ar.filter(isUniqueInArray); // remove duplicates
 			

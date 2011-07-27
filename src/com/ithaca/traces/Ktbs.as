@@ -11,11 +11,15 @@ package com.ithaca.traces
 	{
 			
 		internal var arBases:ArrayCollection;		
+		
+		public var arServices:ArrayCollection;	
 
 		
 		public function Ktbs(uri:String=null, uri_attribution_policy:String = null)
 		{
 			super(uri, uri_attribution_policy);
+			arBases = new ArrayCollection();
+			arServices = new ArrayCollection();
 		}
 		
 		[Bindable("listBasesChange")]
@@ -35,7 +39,7 @@ package com.ithaca.traces
 		
 		public function createBase(uri:String = null):Base
 		{
-			var newBase:Base = new Base(uri,this.uri_attribution_policy);
+			var newBase:Base = new Base(this,uri,this.uri_attribution_policy);
 			arBases.addItem(newBase);
 			this.dispatchEvent(new Event("listBasesChange"));
 			return newBase;

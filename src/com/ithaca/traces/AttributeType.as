@@ -29,6 +29,7 @@ package com.ithaca.traces
 
 		public function setRange(value:String, isList:Boolean = false):void
 		{
+			//TODO : check range 
 			_range = value;
 			_isRangeList = isList;
 		}

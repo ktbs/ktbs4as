@@ -91,7 +91,10 @@ package com.ithaca.traces
 		[Bindable]
 		public function get end():int
 		{
-			return _end;
+			if(isNaN(_end))
+				return _begin;
+			else
+				return _end;
 		}
 
 		public function set end(value:int):void
@@ -154,6 +157,11 @@ package com.ithaca.traces
 				return (this.mapAttribute[at] as Attribute).value;
 			
 			return null;
+		}
+		
+		public function getAttributeValueByTypeUri(uri:String):*
+		{
+			return getAttributeValue(trace.model.get(uri) as AttributeType);
 		}
 		
 		public function setAttributeValue(at:AttributeType, value:*):void
@@ -334,7 +342,7 @@ package com.ithaca.traces
 		}
 
 		
-		public function registerRelation(rel:Relation, silent:Boolean = false):void
+		public function registerRelation(rel:Relation, silent:Boolean = false):void //should be private
 		{
 			
 			//the relation is maybe not completely initialized  
@@ -386,7 +394,7 @@ package com.ithaca.traces
 			
 		}
 		
-		public function unregisterRelation(rel:Relation, silent:Boolean = false):void
+		public function unregisterRelation(rel:Relation, silent:Boolean = false):void //should be private
 		{
 			//is the relation incoming or outcoming ?
 			var incoming:Boolean;			
@@ -423,12 +431,12 @@ package com.ithaca.traces
 			}
 		}
 		
-		public function incomingRelationChange(changingRelation:Relation):void
+		public function incomingRelationChange(changingRelation:Relation):void //should be private
 		{
 			this.dispatchEvent(new Event("incomingRelationsChange"));
 		}
 		
-		public function outcomingRelationChange(changingRelation:Relation):void
+		public function outcomingRelationChange(changingRelation:Relation):void //should be private
 		{
 			this.dispatchEvent(new Event("outcomingRelationsChange"));
 		}

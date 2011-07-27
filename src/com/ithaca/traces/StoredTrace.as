@@ -1,5 +1,7 @@
 package com.ithaca.traces
 {
+	import com.ithaca.traces.services.ITraceService;
+	
 	import flash.events.Event;
 
 	public class StoredTrace extends Trace
@@ -44,7 +46,7 @@ package com.ithaca.traces
 		}
 
 		public function createObsel( type:ObselType,
-							begin:Number,
+							begin:Number = NaN,
 							end:Number = NaN,
 							uri:String = null,
 							subject:String = null,
@@ -57,9 +59,16 @@ package com.ithaca.traces
 			if(subject == null)
 				subject = this.defaultSubject;
 			
+			if(isNaN(begin))
+				begin = new Date().time;
+			
 			var o:Obsel = new Obsel(this,type,begin,end,uri,subject,attributes,relations,source_obsels);
 			
 			this._arObsels.addItem(o);
+			
+			//TODO : MAKE CLEANER
+			for each(var s:ITraceService in  this.services)
+				s.addObsel(o);
 			
 			return o;
 		}

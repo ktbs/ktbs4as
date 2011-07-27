@@ -34,12 +34,15 @@ package com.ithaca.traces
 				this.uri_attribution_policy = uri_attribution_policy;
 			
 			if(uri)
-				this.uri = uri;
+				this._uri = uri;
 			else if(this.uri_attribution_policy == Resource.RESOURCE_URI_ATTRIBUTION_POLICY_CLIENT_IS_KING)
-				this.uri = this.uid;
+				this._uri = this.uid;
 			else
 				;//TODO
 
+			
+			this._label = this._uri;
+			
 			super();
 			
 		}

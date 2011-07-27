@@ -15,10 +15,22 @@ package com.ithaca.traces
 		
 		internal var _arMethods:ArrayCollection;
 		
+		internal var _ktbs:Ktbs;
 		
-		public function Base(uri:String=null, uri_attribution_policy:String = null)
+		
+		public function Base(ktbs:Ktbs, uri:String=null, uri_attribution_policy:String = null)
 		{
 			super(uri, uri_attribution_policy);
+			
+			_arTraces = new ArrayCollection();
+			_arModels = new ArrayCollection();
+			_arMethods = new ArrayCollection();
+			_ktbs = ktbs;
+		}
+		
+		public function get ktbs():Ktbs
+		{
+			return _ktbs;
 		}
 		
 		public function get(uri:String):Resource
@@ -84,6 +96,20 @@ package com.ithaca.traces
 			this.dispatchEvent(new Event("listMethodsChange"));
 			
 			return newMethod;
+		}
+		
+		[Bindable(event="listTracesChange")]
+		public function getTraceByName(name:String):Array
+		{
+			var returnAr:Array = [];
+			
+			for each(var tr:Trace in this._arTraces)
+			{
+				if(tr.label == name)
+					returnAr.push(tr);
+			}
+			
+			return returnAr;
 		}
 		
 	}

@@ -40,6 +40,11 @@ package com.ithaca.traces
 			this._arTraceSources = new ArrayCollection();
 			this._arTraceTransformed = new ArrayCollection();
 		}
+		
+		public function get services():ArrayCollection
+		{
+			return _base.ktbs.arServices;
+		}
 
 		public function get base():Base
 		{
@@ -56,6 +61,8 @@ package com.ithaca.traces
 		{
 			return _origin;
 		}
+		
+
 
 		[Bindable(event="listSourcesChange")]
 		public function listSources():ArrayCollection
@@ -76,10 +83,48 @@ package com.ithaca.traces
 			return _arObsels;
 		}	
 		
+		public function getEarliestObsel():Obsel
+		{
+			var earliest:Obsel = null;
+			var arObsel:Array = this.listObsels();
+			if(arObsel.length > 0)
+			{
+				earliest = arObsel[0];
+				for each(var obs:Obsel in arObsel)
+				{
+					if(obs.begin < earliest.begin)
+						earliest = obs;						
+				}
+			}
+			
+			return earliest;
+		}
+		
+		public function getLatestObsel():Obsel
+		{
+			var latest:Obsel = null;
+			var arObsel:Array = this.listObsels();
+			if(arObsel.length > 0)
+			{
+				latest = arObsel[0];
+				for each(var obs:Obsel in arObsel)
+				{
+					if(obs.end > latest.end)
+						latest = obs;						
+				}
+			}
+			
+			return latest;
+		}
+		
 		public function listObsels(begin:Number = NaN, end:Number = NaN, reverse:Boolean = false):Array
 		{
 			var ar:Array = [];
 			this._arObsels.refresh(); // we order the obsels by begin time
+			
+			if(isNaN(begin) && isNaN(end))
+				return _arObsels.source;
+			
 			for each(var obs:Obsel in this._arObsels)
 			{
 				if(			(	isNaN(begin) || (!isNaN(obs.begin) && obs.begin > begin)	)
