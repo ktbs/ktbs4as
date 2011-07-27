@@ -4,8 +4,8 @@ package com.ithaca.traces
 
 	public class ExtensibleResource extends Resource
 	{
-		protected var _directSubTypes:Array = [];
-		protected var _directSuperTypes:Array = [];
+		internal var _directSubTypes:Array = [];
+		internal var _directSuperTypes:Array = [];
 		
 		public function ExtensibleResource(uri:String=null, uri_attribution_policy:String=null, superTypes:Array = null)
 		{

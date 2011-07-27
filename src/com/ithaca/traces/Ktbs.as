@@ -10,7 +10,7 @@ package com.ithaca.traces
 	public class Ktbs extends Resource
 	{
 			
-		protected var arBases:ArrayCollection;		
+		internal var arBases:ArrayCollection;		
 
 		
 		public function Ktbs(uri:String=null, uri_attribution_policy:String = null)

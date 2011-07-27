@@ -6,9 +6,9 @@ package com.ithaca.traces
 	
 	public class Relation extends ObjectProxy
 	{
-		protected var _relationType:RelationType;
-		protected var _originObsel:Obsel;
-		protected var _targetObsel:Obsel;
+		internal var _relationType:RelationType;
+		internal var _originObsel:Obsel;
+		internal var _targetObsel:Obsel;
 		
 		public function Relation(relationType:RelationType, originObsel:Obsel = null, targetObsel:Obsel = null)
 		{

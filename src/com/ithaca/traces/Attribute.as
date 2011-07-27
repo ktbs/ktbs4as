@@ -6,9 +6,10 @@ package com.ithaca.traces
 	
 	public class Attribute extends ObjectProxy
 	{
-		protected var _attributeType:AttributeType;
-		protected var _value:*;
-		protected var _obselParent:Obsel;
+		internal var _attributeType:AttributeType;
+		internal var _value:*;
+		internal var _obselParent:Obsel;
+		
 		public function Attribute(attributeType:AttributeType, value:* = null, obselParent:Obsel = null)
 		{
 			this._obselParent = obselParent;

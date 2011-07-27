@@ -4,9 +4,9 @@ package com.ithaca.traces
 
 	public class RelationType extends ExtensibleResource
 	{
-		protected var _model:Model;
-		protected var _domain:ObselType;
-		protected var _range:ObselType;
+		internal var _model:Model;
+		internal var _domain:ObselType;
+		internal var _range:ObselType;
 	
 		public function RelationType(model:Model, domain:ObselType = null, range:ObselType = null, superTypes:Array = null, uri:String=null, uri_attribution_policy:String = null)
 		{

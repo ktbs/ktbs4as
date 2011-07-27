@@ -9,16 +9,17 @@ package com.ithaca.traces
 
 	public class Trace extends Resource
 	{
-		protected var _base:Base;
-		protected var _model:Model;
-		protected var _origin:String;
+		internal var _base:Base;
+		internal var _model:Model;
+		internal var _origin:String;
 		
-		protected var _arTraceSources:ArrayCollection;
-		protected var _arTraceTransformed:ArrayCollection;
+		internal var _arTraceSources:ArrayCollection;
+		internal var _arTraceTransformed:ArrayCollection;
 		
-		protected var _arObsels:ArrayCollection;
+		[Bindable]
+		internal var _arObsels:ArrayCollection;
 		//we define a way the obsel array collection will be maintained sorted. The array will be searchable more efficiently on the field we declare here.
-		protected var arObselSortFields:Array = [new SortField("begin"), new SortField("uri")]; 	
+		internal var arObselSortFields:Array = [new SortField("begin"), new SortField("uri")]; 	
 		
 		public function Trace(base:Base, model:Model, origin:String = null, uri:String=null, uri_attribution_policy:String = null)
 		{

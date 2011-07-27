@@ -4,7 +4,7 @@ package com.ithaca.traces
 
 	public class StoredTrace extends Trace
 	{
-		protected var _defaultSubject:String;
+		internal var _defaultSubject:String;
 		
 		public function StoredTrace(base:Base, model:Model, defaultSubject:String = null, origin:String = null, uri:String = null, uri_attribution_policy:String = null)
 		{

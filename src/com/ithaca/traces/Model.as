@@ -4,12 +4,12 @@ package com.ithaca.traces
 	{
 		protected var _base:Base;
 		
-		protected var _directAttributeTypes:Array;
-		protected var _directRelationTypes:Array;
-		protected var _directObselTypes:Array;
+		internal var _directAttributeTypes:Array;
+		internal var _directRelationTypes:Array;
+		internal var _directObselTypes:Array;
 		
-		protected var _unit:String;
-		protected var _readOnly:Boolean;
+		internal var _unit:String;
+		internal var _readOnly:Boolean;
 		
 		public function Model(base:Base, uri:String=null, uri_attribution_policy:String = null)
 		{

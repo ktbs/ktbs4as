@@ -19,9 +19,9 @@ package com.ithaca.traces
 		
 		public static var RESOURCE_DEFAULT_LABEL_VALUE:String = "noname";
 		
-		protected var _uri:String;
-		protected var _sync_status:String = Resource.RESOURCE_SYNC_STATUS_UNKNOWN;
-		protected var _label:String = RESOURCE_DEFAULT_LABEL_VALUE;
+		internal var _uri:String;
+		internal var _sync_status:String = Resource.RESOURCE_SYNC_STATUS_UNKNOWN;
+		internal var _label:String = RESOURCE_DEFAULT_LABEL_VALUE;
 		
 		public var uri_attribution_policy:String = Resource.RESOURCE_URI_ATTRIBUTION_POLICY_CLIENT_IS_KING;
 		

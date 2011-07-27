@@ -2,11 +2,11 @@ package com.ithaca.traces
 {
 	public class ObselType extends ExtensibleResource
 	{
-		protected var _model:Model;
+		internal var _model:Model;
 		
-		protected var _directAttributeTypes:Array;
-		protected var _directOutcomingRelationsTypes:Array;
-		protected var _directIncomingRelationsTypes:Array;
+		internal var _directAttributeTypes:Array;
+		internal var _directOutcomingRelationsTypes:Array;
+		internal var _directIncomingRelationsTypes:Array;
 		
 		public function ObselType(model:Model, superTypes:Array, uri:String=null, uri_attribution_policy:String = null)
 		{

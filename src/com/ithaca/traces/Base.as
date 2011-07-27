@@ -7,13 +7,13 @@ package com.ithaca.traces
 
 	public class Base extends Resource
 	{
-		protected var mapUriToResource:ObjectProxy;
+		internal var mapUriToResource:ObjectProxy;
 		
-		protected var _arTraces:ArrayCollection;
+		internal var _arTraces:ArrayCollection;
 		
-		protected var _arModels:ArrayCollection;
+		internal var _arModels:ArrayCollection;
 		
-		protected var _arMethods:ArrayCollection;
+		internal var _arMethods:ArrayCollection;
 		
 		
 		public function Base(uri:String=null, uri_attribution_policy:String = null)

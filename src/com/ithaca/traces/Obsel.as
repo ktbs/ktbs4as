@@ -8,23 +8,23 @@ package com.ithaca.traces
 
 	public class Obsel extends Resource
 	{
-		protected var _trace:Trace;
-		protected var _obselType:ObselType;
+		internal var _trace:Trace;
+		internal var _obselType:ObselType;
 		
-		protected var _begin:int;
-		protected var _end:int;
+		internal var _begin:int;
+		internal var _end:int;
 		
-		protected var _subject:String;
+		internal var _subject:String;
 		
-		protected var arSourceObsels:ArrayCollection = new ArrayCollection();
+		internal var arSourceObsels:ArrayCollection = new ArrayCollection();
 		
-		protected var mapAttribute:Dictionary = new Dictionary();	
-		protected var _attributes:ArrayCollection = new ArrayCollection();
+		internal var mapAttribute:Dictionary = new Dictionary();	
+		internal var _attributes:ArrayCollection = new ArrayCollection();
 		
-		protected var mapOutcomingRelations:Dictionary = new Dictionary();
-		protected var mapIncomingRelations:Dictionary = new Dictionary();
-		protected var _incomingRelations:ArrayCollection = new ArrayCollection();
-		protected var _outcomingRelations:ArrayCollection = new ArrayCollection();
+		internal var mapOutcomingRelations:Dictionary = new Dictionary();
+		internal var mapIncomingRelations:Dictionary = new Dictionary();
+		internal var _incomingRelations:ArrayCollection = new ArrayCollection();
+		internal var _outcomingRelations:ArrayCollection = new ArrayCollection();
 		
 		public function Obsel(trace:Trace,
 							  type:ObselType,
