@@ -66,7 +66,7 @@ package com.ithaca.traces
 			if(_base)
 				_base.registerResource(o);
 			
-			this._arObsels.addItem(o);
+			this._arObsels.push(o);
 			
 			//TODO : MAKE CLEANER
 			for each(var s:ITraceService in  this.services)

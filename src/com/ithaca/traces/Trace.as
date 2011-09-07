@@ -17,9 +17,9 @@ package com.ithaca.traces
 		internal var _arTraceTransformed:ArrayCollection;
 		
 		[Bindable]
-		internal var _arObsels:ArrayCollection;
+		internal var _arObsels:ObselCollection;
 		//we define a way the obsel array collection will be maintained sorted. The array will be searchable more efficiently on the field we declare here.
-		internal var arObselSortFields:Array = [new SortField("begin"), new SortField("uri")]; 	
+		//internal var arObselSortFields:Array = [new SortField("begin"), new SortField("end")]; 	
 		
 		public function Trace(base:Base, model:Model, origin:String = null, uri:String=null, uri_attribution_policy:String = null)
 		{
@@ -32,10 +32,10 @@ package com.ithaca.traces
 				; // TODO : set origin to now()
 			
 			//Creating the arObsels ArrayCollection and applying sortfield
-			_arObsels = new ArrayCollection();
-			var arObselsSort:Sort = new Sort();
+			_arObsels = new ObselCollection();
+			/*var arObselsSort:Sort = new Sort();
 			arObselsSort.fields = arObselSortFields;
-			_arObsels.sort = arObselsSort;
+			_arObsels.sort = arObselsSort;*/
 			
 			this._arTraceSources = new ArrayCollection();
 			this._arTraceTransformed = new ArrayCollection();
@@ -78,19 +78,42 @@ package com.ithaca.traces
 		}
 
 		[Bindable]
-		public function get obsels():ArrayCollection
+		public function get obsels():ObselCollection
 		{
 			return _arObsels;
 		}	
 		
+		/*protected function findClosestBeginingObsel(t:Number, start:Number, end:Number):Object
+		{
+			if(isNaN(start))
+				return findClosestSmaller(ar,t,0,arTimes.length-1)
+			else if(start == end)
+				return ar[start];
+			else
+			{
+				var middle:Number = Math.floor((end-start)/2);
+				
+				if(middle >= 1)
+				{
+					middle += start;
+					
+					if(ar[middle] > n)
+						return findClosestSmaller(ar,n,start, middle);
+					else
+						return findClosestSmaller(ar,n,middle, end);
+				}
+				else
+					return ar[start];
+			}
+		}*/
+		
 		public function getEarliestObsel():Obsel
 		{
 			var earliest:Obsel = null;
-			var arObsel:Array = this.listObsels();
-			if(arObsel.length > 0)
+			if(_arObsels.length > 0)
 			{
-				earliest = arObsel[0];
-				for each(var obs:Obsel in arObsel)
+				earliest = _arObsels._obsels[0];
+				for each(var obs:Obsel in _arObsels._obsels)
 				{
 					if(obs.begin < earliest.begin)
 						earliest = obs;						
@@ -103,11 +126,10 @@ package com.ithaca.traces
 		public function getLatestObsel():Obsel
 		{
 			var latest:Obsel = null;
-			var arObsel:Array = this.listObsels();
-			if(arObsel.length > 0)
+			if(_arObsels.length > 0)
 			{
-				latest = arObsel[0];
-				for each(var obs:Obsel in arObsel)
+				latest = _arObsels._obsels[0];
+				for each(var obs:Obsel in _arObsels._obsels)
 				{
 					if(obs.end > latest.end)
 						latest = obs;						
@@ -117,9 +139,24 @@ package com.ithaca.traces
 			return latest;
 		}
 		
-		public function listObsels(begin:Number = NaN, end:Number = NaN, reverse:Boolean = false):Array
+		public function listObsels(begin:Number = NaN, end:Number = NaN, reverse:Boolean = false):ObselCollection
 		{
-			var ar:Array = [];
+			var ar:ObselCollection = new ObselCollection();
+			
+			for each(var obs:Obsel in this._arObsels._obsels)
+			{
+				if(			(	isNaN(begin) || (!isNaN(obs.begin) && obs.begin > begin)	)
+					&& 	( 	isNaN(end) || (!isNaN(obs.end) && obs.end < end) || (!isNaN(obs.begin) && obs.begin < end)	)
+				)
+				{
+					ar.push(obs)		
+				}
+			}
+			
+			return ar;
+			
+			//ArrayCOllection Implementation
+			/*var ar:Array = [];
 			this._arObsels.refresh(); // we order the obsels by begin time
 			
 			if(isNaN(begin) && isNaN(end))
