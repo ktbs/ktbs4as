@@ -138,22 +138,31 @@ package com.ithaca.traces
 			if(reverse) 
 				ar.reverse();
 					 
-			return ar;	
+			return ar;*/
+			
+			
 		}
 		
 		public function getObsel(uri:String):Obsel
 		{
+			
+			return _base.get(uri) as Obsel;
+			
+			
+			//ArrayCOllection Implementation
 			//here we use a cursor on our sorted table. This approach is said to be more efficient.
-			this._arObsels.refresh();
+			/*this._arObsels.refresh();
 			
 			var cursor:IViewCursor = this._arObsels.createCursor();
 			
 			if(cursor.findAny({"uri":uri}))
 				if(cursor.current is Obsel)
-					return cursor.current as Obsel;
+					return cursor.current as Obsel;*/
 		
 			return null;
 		}
+		
+
 
 	}
 }
