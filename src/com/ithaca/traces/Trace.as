@@ -199,7 +199,25 @@ package com.ithaca.traces
 			return null;
 		}
 		
-
+		public function getObselsAsAray():Array //depreciated
+		{
+			var ar:Array = [];
+			
+			for each(var obs:Obsel in this._arObsels._obsels)
+			{
+					ar.push(obs)		
+			}
+			
+			return ar;
+		}
+		
+		public function getObselsAsArayCollection():ArrayCollection //depreciated
+		{
+			
+			//WARNING : won't update with the trace, depreciated
+			
+			return new ArrayCollection(getObselsAsAray());
+		}
 
 	}
 }
