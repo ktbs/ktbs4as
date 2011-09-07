@@ -11,8 +11,8 @@ package com.ithaca.traces
 		internal var _trace:Trace;
 		internal var _obselType:ObselType;
 		
-		internal var _begin:int;
-		internal var _end:int;
+		internal var _begin:Number;
+		internal var _end:Number;
 		
 		internal var _subject:String;
 		
@@ -75,12 +75,12 @@ package com.ithaca.traces
 		}
 
 		[Bindable]
-		public function get begin():int
+		public function get begin():Number
 		{
 			return _begin;
 		}
 
-		public function set begin(value:int):void
+		public function set begin(value:Number):void
 		{
 			if( _begin !== value)
 			{
@@ -89,7 +89,7 @@ package com.ithaca.traces
 		}
 
 		[Bindable]
-		public function get end():int
+		public function get end():Number
 		{
 			if(isNaN(_end))
 				return _begin;
@@ -97,7 +97,7 @@ package com.ithaca.traces
 				return _end;
 		}
 
-		public function set end(value:int):void
+		public function set end(value:Number):void
 		{
 			if( _end !== value)
 			{
