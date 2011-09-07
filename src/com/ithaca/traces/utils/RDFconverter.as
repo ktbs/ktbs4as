@@ -43,7 +43,6 @@ package com.ithaca.traces.utils
 					//for each "ttl instruction", we create a temporary object to hold all the obsel data
 					var objectObs:Object = getObjectifiedObselFromRDF(l);
 					
-					trace(objectObs.type);
 					
 					if(objectObs.type)
 					{
@@ -176,7 +175,7 @@ package com.ithaca.traces.utils
 		
 		private static function repr2valueWithMeta(s: String, isTime: Boolean = false): Object
 		{
-			return {isAnUri:isReprAnUri(s), value:repr2value(s,isTime)};
+			return {isUri:isReprAnUri(s), value:repr2value(s,isTime)};
 		}
 		
 		/**
@@ -377,7 +376,7 @@ package com.ithaca.traces.utils
 				for each(var pdata:Object in odata.props)
 				{
 					var atType:AttributeType = null;
-					if(pdata.prop.isAnUri)
+					if(pdata.prop.isUri)
 						atType = parentTrace.model.get(pdata.prop.value) as AttributeType;
 					else
 					{
