@@ -56,6 +56,7 @@ package com.ithaca.traces
 		{
 			//TODO : check if uri not taken and similar type not already declared
 			var ot:ObselType = new ObselType(this, supertypes,uri,this.uri_attribution_policy);
+			if(_base) _base.registerResource(ot);
 			this._directObselTypes.push(ot);
 			this.onPropertyChange("listObselTypesChange","listObselTypesChange",true);
 			return ot;
@@ -65,6 +66,7 @@ package com.ithaca.traces
 		{
 			//TODO : check if uri not taken and similar type not already declared
 			var at:AttributeType = new AttributeType(this, domain, range, range_is_list, uri,this.uri_attribution_policy);
+			if(_base) _base.registerResource(at);
 			this._directAttributeTypes.push(at);
 			this.onPropertyChange("listAttributeTypesChange","listAttributeTypesChange",true);
 			return at;
@@ -74,6 +76,7 @@ package com.ithaca.traces
 		{
 			//TODO : check if uri not taken and similar type not already declared
 			var rt:RelationType = new RelationType(this,domain,range,supertypes,uri,this.uri_attribution_policy);
+			if(_base) _base.registerResource(rt);
 			this._directRelationTypes.push(rt);
 			this.onPropertyChange("listRelationTypesChange","listRelationTypesChange",true);
 			return rt;
@@ -156,7 +159,9 @@ package com.ithaca.traces
 		
 		public function get(uri:String):Resource
 		{
-			//TODO : more performant implementation
+			
+			if(_base)
+				return _base.get(uri);			
 			
 			for each(var elt:Resource in this.listAttributeTypes())
 				if(elt.uri == uri)

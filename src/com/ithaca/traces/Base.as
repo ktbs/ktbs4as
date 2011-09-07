@@ -25,6 +25,7 @@ package com.ithaca.traces
 			_arTraces = new ArrayCollection();
 			_arModels = new ArrayCollection();
 			_arMethods = new ArrayCollection();
+			mapUriToResource = new ObjectProxy();
 			_ktbs = ktbs;
 		}
 		
@@ -62,7 +63,7 @@ package com.ithaca.traces
 		public function createStoredTrace(model:Model, defaultSubject:String = null, origin:String = null, uri:String = null):StoredTrace
 		{
 			var newTrace:StoredTrace = new StoredTrace(this,model,defaultSubject, origin,uri);
-			
+			registerResource(newTrace);
 			this._arTraces.addItem(newTrace);
 			this.dispatchEvent(new Event("listTracesChange"));
 			
@@ -72,6 +73,7 @@ package com.ithaca.traces
 		public function createComputedTrace(model:Model, method:Method, sources:Array):ComputedTrace
 		{
 			var newTrace:ComputedTrace = new ComputedTrace(this, model, null, uri, this.uri_attribution_policy);
+			registerResource(newTrace);
 			//TODO : computed trace initialization
 			this._arTraces.addItem(newTrace);
 			this.dispatchEvent(new Event("listTracesChange"));
@@ -82,6 +84,7 @@ package com.ithaca.traces
 		public function createModel(uri:String = null):Model
 		{
 			var newModel:Model = new Model(this, uri, this.uri_attribution_policy);
+			registerResource(newModel);
 			this._arModels.addItem(newModel);
 			this.dispatchEvent(new Event("listModelsChange"));
 			
@@ -91,6 +94,7 @@ package com.ithaca.traces
 		public function createMethod(inherits:Method, uri:String = null, parameters:Object = null):Method
 		{
 			var newMethod:Method = new Method(uri, this.uri_attribution_policy);
+			registerResource(newMethod);
 			//TODO : method initialization
 			this._arMethods.addItem(newMethod);
 			this.dispatchEvent(new Event("listMethodsChange"));
@@ -110,6 +114,17 @@ package com.ithaca.traces
 			}
 			
 			return returnAr;
+		}
+		
+		public function registerResource(r:Resource):void
+		{
+			mapUriToResource[r.uri] = r;
+			//TODO : handle changing of uri
+		}
+		
+		public function unRegisterResource(r:Resource):void
+		{
+			delete mapUriToResource[r.uri];
 		}
 		
 	}

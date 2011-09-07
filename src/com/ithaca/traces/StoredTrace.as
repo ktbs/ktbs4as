@@ -63,6 +63,8 @@ package com.ithaca.traces
 				begin = new Date().time;
 			
 			var o:Obsel = new Obsel(this,type,begin,end,uri,subject,attributes,relations,source_obsels);
+			if(_base)
+				_base.registerResource(o);
 			
 			this._arObsels.addItem(o);
 			
