@@ -21,14 +21,17 @@ package com.ithaca.traces.services
 	{
 		private var response:String = "";
 		public var console:TextArea;
+		private var _host:String;
+		private var _port:int;
 		
 		public function DescribeService(host:String=null, port:int=32145, policyPort:int=32145 )
 		{
-			
-			//Security.loadPolicyFile("/crossdomain.xml");
+			_host = host;
+			_port = port;
 
-			super(host, port);
 			configureListeners();
+			super(host, port);
+			Security.allowDomain("localhost");
 			
 			if (host && port)  {
 				super.connect(host, port);
@@ -55,7 +58,7 @@ package com.ithaca.traces.services
 			
 			logToConsole("sending obsel : "+d);
 			
-			//writeln(d);
+			writeln(d);
 			return null;
 		}
 		
@@ -72,6 +75,10 @@ package com.ithaca.traces.services
 		
 		
 		private function writeln(str:String):void {
+			
+			if(!connected)
+				super.connect(_host, _port);
+			
 			str += "\n";
 			try {
 				writeUTFBytes(str);
@@ -96,10 +103,12 @@ package com.ithaca.traces.services
 		private function closeHandler(event:Event):void {
 			logToConsole("closeHandler: " + event);
 			logToConsole(response.toString());
+			//connected = false;
 		}
 		
 		private function connectHandler(event:Event):void {
 			logToConsole("connectHandler: " + event);
+			//connected = true;
 			//sendRequest();
 		}
 		
