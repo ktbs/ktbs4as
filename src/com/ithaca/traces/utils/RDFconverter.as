@@ -6,6 +6,7 @@ package com.ithaca.traces.utils
 	import com.ithaca.traces.Model;
 	import com.ithaca.traces.Obsel;
 	import com.ithaca.traces.ObselType;
+	import com.ithaca.traces.Relation;
 	import com.ithaca.traces.StoredTrace;
 	import com.ithaca.traces.Trace;
 	
@@ -83,13 +84,17 @@ package com.ithaca.traces.utils
 		/**
 		 * Convert a value to its turtle representation
 		 */
-		private static function value2repr(val: *, isTime: Boolean = false): String
+		private static function value2repr(val: *, isTime: Boolean = false, isUri:Boolean = false): String
 		{
 			var res: String = "";
 			
 			if (val == null)
 			{
 				res = '"[null value]"';
+			}
+			else if(isUri)
+			{
+				res = "<"+val.toString()+">";
 			}
 			else if (val is Number || val is int || val is uint)
 			{
@@ -203,13 +208,26 @@ package com.ithaca.traces.utils
 				"  ktbs:hasEnd " + value2repr(obs.end, true) + " ;",
 				'  ktbs:hasSubject "' + obs.subject + '" ;');
 			
-			//TODO
+			//for each attribute we add it to the rdf
+			for each(var at:Attribute in obs.attributes)
+			{
+				if(at.attributeType)
+					res.push("  "+value2repr(at.attributeType.uri, false, true) + " " + value2repr(at.value, ((at.value is String && at.value.indexOf('timestamp') == -1) ? false : true) ) + " ;");
+			}
+			
+			//for each outcoming relation we add it to the rdf
+			for each(var r:Relation in obs.outcomingRelations)
+			{
+				if(r.relationType)
+					res.push("  "+value2repr(r.relationType.uri, false, true) + " " + value2repr(r.targetObsel.uri,false,true) + " ;");
+			}
+			
 			/*for (var prop: String in this.props)
 			{
 				res.push("  :has" + prop.charAt(0).toUpperCase() + prop.substr(1) + " " + value2repr(this.props[prop], (prop.indexOf('timestamp') == -1 ? false : true) ) + " ;");
 			}*/
 			
-			res.push(".\n");
+			res.push(".\n\n");
 			
 			return res.join("\n");
 		}
@@ -339,6 +357,99 @@ package com.ithaca.traces.utils
 			return obs;
 		}
 		
+		
+		public static function getObjectFromRDF(rdf: String):Object
+		{
+			//TODO : support relations
+			//TODO : support source obsels
+			
+			var obs:Object = {uri:null, type:null, props:[]};
+			
+			var a: Array = null;
+			var inData: Boolean = false;
+			var listData: Array = null;
+			
+			for each (var l: String in rdf.split(/\n/))
+			{
+				l = StringUtil.trim(l);
+				if (l == ".")
+					break;
+				//trace("Processing " + l);
+				a = l.match(/(.+)\s+a\s+:(\w+)\s*;/);
+				if(a) 
+				{
+					//we have to deal with the typename (or type uri possibly ?)
+					obs.type = repr2valueWithMeta(a[2]);			
+					
+					
+					
+					//we potentially get an URI for the Obsel
+					if(isReprAnUri(a[1]))
+						obs.uri = repr2value(a[1]);
+					
+					a = null;
+					inData = true;
+					
+					continue;
+				}
+				if (! inData)
+					continue;
+				if (listData)
+				{
+					a=l.match(/(.*)\s*\)\s*;$/);
+					if (a)
+					{
+						// End of list
+						if (StringUtil.trim(a[1]).length != 0)
+						{
+							// There is a last item
+							listData.push(repr2valueWithMeta(StringUtil.trim(a[1])));
+						}
+						listData = null;
+						continue;
+					}
+					listData.push(repr2valueWithMeta(l));
+					continue;
+				}
+				a = l.match(/^(?:ktbs|):has(\w+)\s+(.+?)\s*;?$/);
+				if (a)
+				{
+					/*
+					for (var i: int = 0 ; i < a.length ; i++)
+					{
+					trace("Property " + i + ": " + a[i]);
+					}
+					*/
+					var prop:Object = repr2valueWithMeta(a[1]);
+					var data: String = a[2];
+					
+					if (data == "(")
+					{
+						// Beginning of a list
+						// FIXME: there may be data just after the (, this case is not taken into account here.
+						listData = new Array();
+						obs.props.push({prop:prop, value:listData});
+						continue;
+					}
+					else 
+					{
+							if (prop.value && prop.value is String && prop.value.indexOf("timestamp") > -1)							
+								obs.props.push({prop:prop, value:repr2valueWithMeta(data, true)});
+							else
+								obs.props.push({prop:prop, value:repr2valueWithMeta(data)});
+							break;
+					}
+				}
+				else
+				{
+					logger.error("Error in fromRDF : " + l);
+					
+				}	
+			}
+			
+			return obs;
+		}
+		
 		private static function initObselFromData(odata:Object, parentTrace:StoredTrace, updateModel:Boolean = true):Obsel
 		{
 			//TODO : support updateModel with false value
@@ -397,6 +508,14 @@ package com.ithaca.traces.utils
 						
 						if(!pdata.prop.isUri)
 							atType.label = pdata.prop.value;
+					}
+					
+					//We consolid the model
+					if(atType.domain != obsType)
+					{
+						//it is already a dummy abstract type
+						
+						//or not...
 					}
 					
 					arAttributes.push(new Attribute(atType,pdata.value.value));
