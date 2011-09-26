@@ -1,6 +1,7 @@
 package com.ithaca.traces.services
 {
 	import com.ithaca.traces.Obsel;
+	import com.ithaca.traces.Resource;
 	import com.ithaca.traces.utils.RDFconverter;
 	
 	import flash.events.Event;
@@ -23,6 +24,8 @@ package com.ithaca.traces.services
 		public var uid_trace:String;
 		public var uri_trace:String;
 		
+		private var _serverRole:String = ServiceUtility.SERVER_ROLE_LISTEN;
+		
 		[Bindable]
 		public var status:String = "synchronized";
 		
@@ -43,7 +46,15 @@ package com.ithaca.traces.services
 			this.addEventListener(FaultEvent.FAULT, onRequestFault);
 		}
 		
+		public function set serverRole(value:String):void
+		{
+			_serverRole = value;
+		}
 		
+		public function get serverRole():String
+		{
+			return _serverRole;
+		}
 		
 		public function addObsel(obs:Obsel):AsyncToken
 		{
@@ -105,6 +116,12 @@ package com.ithaca.traces.services
 		public function syncNow(e:Event = null):AsyncToken
 		{
 			return sendObsels();
+		}
+		
+		public function syncResource(res:Resource):AsyncToken
+		{
+			//TODO
+			return null;
 		}
 	}
 }

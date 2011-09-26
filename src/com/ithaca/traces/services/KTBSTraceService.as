@@ -18,6 +18,15 @@ package com.ithaca.traces.services
 		}
 		
 		public function addObsel(obs:Obsel):AsyncToken
+		public function set serverRole(value:String):void
+		{
+			_serverRole = value;
+		}
+		
+		public function get serverRole():String
+		{
+			return _serverRole;
+		}
 		{
 
 			this.url = rootURL+obs.uid+"/"+obs.trace.uri+"/";
@@ -30,10 +39,23 @@ package com.ithaca.traces.services
 			return null;
 		}
 		
+		
+		
 		public function updateObsel(obs:Obsel):AsyncToken
 		{
 			//TODO
 			return null;
+		}
+		
+		public function getModel(obs:Obsel):AsyncToken
+		{
+			return null;
+		}
+		
+		private function logToConsole(str:String):void
+		{
+			if(console)
+				console.text += new Date().toString()+ " : \t" +str + "\n";
 		}
 	}
 }

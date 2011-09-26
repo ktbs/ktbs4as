@@ -3,6 +3,7 @@ package com.ithaca.traces.services
 	import com.ithaca.traces.Attribute;
 	import com.ithaca.traces.AttributeType;
 	import com.ithaca.traces.Obsel;
+	import com.ithaca.traces.Resource;
 	import com.ithaca.traces.utils.RDFconverter;
 	import com.serialization.json.JSON;
 	
@@ -23,6 +24,8 @@ package com.ithaca.traces.services
 		public var console:TextArea;
 		private var _host:String;
 		private var _port:int;
+		
+		private var _serverRole:String = ServiceUtility.SERVER_ROLE_LISTEN;
 		
 		public function DescribeService(host:String=null, port:int=32145, policyPort:int=32145 )
 		{
@@ -129,6 +132,22 @@ package com.ithaca.traces.services
 		{
 			if(console)
 				console.text += new Date().toString()+ " : \t" +str + "\n";
+		}
+		
+		public function set serverRole(value:String):void
+		{
+			_serverRole = value;
+		}
+		
+		public function get serverRole():String
+		{
+			return _serverRole;
+		}
+		
+		public function syncResource(res:Resource):AsyncToken
+		{
+			//TODO
+			return null;
 		}
 	}
 }
