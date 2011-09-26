@@ -7,7 +7,7 @@ package com.ithaca.traces
 
 	public class Base extends Resource
 	{
-		internal var mapUriToResource:ObjectProxy;
+		
 		
 		internal var _arTraces:ArrayCollection;
 		
@@ -15,7 +15,6 @@ package com.ithaca.traces
 		
 		internal var _arMethods:ArrayCollection;
 		
-		internal var _ktbs:Ktbs;
 		
 		
 		public function Base(ktbs:Ktbs, uri:String=null, uri_attribution_policy:String = null)
@@ -25,21 +24,14 @@ package com.ithaca.traces
 			_arTraces = new ArrayCollection();
 			_arModels = new ArrayCollection();
 			_arMethods = new ArrayCollection();
-			mapUriToResource = new ObjectProxy();
 			_ktbs = ktbs;
 		}
 		
-		public function get ktbs():Ktbs
-		{
-			return _ktbs;
-		}
+
 		
 		public function get(uri:String):Resource
 		{
-			if(this.mapUriToResource.hasOwnProperty(uri))
-				return this.mapUriToResource[uri];
-			
-			return null;
+			return _ktbs.get(uri);
 		}
 
 		[Bindable(event="listTracesChange")]
@@ -118,13 +110,13 @@ package com.ithaca.traces
 		
 		public function registerResource(r:Resource):void
 		{
-			mapUriToResource[r.uri] = r;
-			//TODO : handle changing of uri
+			_ktbs.registerResource(r);
+			
 		}
 		
 		public function unRegisterResource(r:Resource):void
 		{
-			delete mapUriToResource[r.uri];
+			_ktbs.unRegisterResource(r);
 		}
 		
 	}
