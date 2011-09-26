@@ -1,5 +1,7 @@
 package com.ithaca.traces
 {
+	import com.ithaca.traces.services.ITraceService;
+	
 	import flash.events.Event;
 	
 	import mx.utils.ObjectProxy;
@@ -13,6 +15,8 @@ package com.ithaca.traces
 		public static var RESOURCE_SYNC_STATUS_UNKNOWN:String = "unknown";
 		public static var RESOURCE_SYNC_STATUS_WAITING:String = "waiting";
 		public static var RESOURCE_SYNC_STATUS_NOSERVER:String = "noserver";
+		public static var RESOURCE_SYNC_STATUS_UNLOADED:String = "unloaded";
+
 		
 		public static var RESOURCE_URI_ATTRIBUTION_POLICY_CLIENT_IS_KING:String = "clientIsKing";
 		public static var RESOURCE_URI_ATTRIBUTION_SERVER_ATTRIBUTED:String = "serverAtributed";
@@ -24,6 +28,7 @@ package com.ithaca.traces
 		internal var _label:String = RESOURCE_DEFAULT_LABEL_VALUE;
 		
 		public var uri_attribution_policy:String = Resource.RESOURCE_URI_ATTRIBUTION_POLICY_CLIENT_IS_KING;
+		internal var _ktbs:Ktbs;
 		
 		public function Resource(uri:String=null, uri_attribution_policy:String = null)
 		{
@@ -43,6 +48,8 @@ package com.ithaca.traces
 			
 			this._label = this._uri;
 			
+			this._sync_status = RESOURCE_SYNC_STATUS_UNLOADED; // TO REDO, should take into account the case where a resource is client-side created here.
+			
 			super();
 			
 		}
@@ -51,6 +58,11 @@ package com.ithaca.traces
 		public function get label():String
 		{
 			return _label;
+		}
+		
+		public function get ktbs():Ktbs
+		{
+			return _ktbs;
 		}
 
 		public function set label(value:String):void
@@ -91,7 +103,7 @@ package com.ithaca.traces
 
 		public function set sync_status(value:String):void
 		{
-			if( _sync_status !== value)
+			if( _sync_status && _sync_status !== value)
 			{
 				_sync_status = value;
 			}
@@ -107,6 +119,18 @@ package com.ithaca.traces
 		public function deleteResource():void
 		{
 			//TODO
+		}
+		
+		public function sync():void
+		{
+			//TODO : sending modification to the server !
+			if(ktbs && ktbs.arServices)
+			{
+				for each(var s:ITraceService in ktbs.arServices)
+				{
+					s.syncResource(this);
+				}
+			}
 		}
 
 	}
