@@ -81,6 +81,14 @@ package com.ithaca.traces
 			return -1;
 		}
 		
+		public function contains(item:Object):Boolean
+		{
+			if(getItemIndex(item)<0)
+				return false;
+			else
+				return true;
+		}
+		
 		public function itemUpdated(item:Object, property:Object=null, oldValue:Object=null, newValue:Object=null):void
 		{
 			throw new IllegalOperationError("itemUpdated - no access through IList; use IPersonVectorDP instead");
