@@ -163,6 +163,18 @@ package com.ithaca.traces
 		{
 			return getAttributeValue(trace.model.get(uri) as AttributeType);
 		}
+        
+        public function getAttributeValueByLabel(label:String):*
+        {
+            for each(var at:AttributeType in _attributes)
+            {
+                //TODO : check if wa consider here attributes types of parents obsel types.
+                if(at.label == label)
+                    return this.getAttributeValueByTypeUri(at.uri);
+            }
+            
+            return null;
+        }
 		
 		public function setAttributeValue(at:AttributeType, value:*):void
 		{
