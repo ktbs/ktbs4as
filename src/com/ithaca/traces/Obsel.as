@@ -166,11 +166,11 @@ package com.ithaca.traces
         
         public function getAttributeValueByLabel(label:String):*
         {
-            for each(var at:AttributeType in _attributes)
+            for each(var at:Attribute in _attributes)
             {
                 //TODO : check if wa consider here attributes types of parents obsel types.
-                if(at.label == label)
-                    return this.getAttributeValueByTypeUri(at.uri);
+                if(at.attributeType.label == label)
+                    return this.getAttributeValueByTypeUri(at.attributeType.uri);
             }
             
             return null;
