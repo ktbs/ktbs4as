@@ -168,9 +168,8 @@ package com.ithaca.traces
         {
             for each(var at:Attribute in _attributes)
             {
-                //TODO : check if wa consider here attributes types of parents obsel types.
                 if(at.attributeType.label == label)
-                    return this.getAttributeValueByTypeUri(at.attributeType.uri);
+                    return at.value;
             }
             
             return null;
