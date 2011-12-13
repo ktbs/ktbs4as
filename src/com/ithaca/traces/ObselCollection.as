@@ -7,6 +7,8 @@ package com.ithaca.traces
 	
 	import mx.collections.ArrayCollection;
 	import mx.collections.IList;
+	import mx.collections.Sort;
+	import mx.collections.SortField;
 	import mx.events.CollectionEvent;
 	import mx.events.CollectionEventKind;
 	
@@ -42,6 +44,23 @@ package com.ithaca.traces
 			dispatchEvent(event);
 			return count;
 		}
+        
+        public function pushMultiple(ar:Array):void
+        {
+            var event:CollectionEvent =	new CollectionEvent(CollectionEvent.COLLECTION_CHANGE);
+            event.location = _obsels.length;
+            event.kind = CollectionEventKind.ADD;
+            
+            for each(var o:Obsel in ar)
+            {
+                event.items.push(o);
+                _obsels.push(o);
+            }
+            
+            dispatchEvent(event);            
+        }
+        
+
 		
 		// IList
 	
@@ -62,6 +81,21 @@ package com.ithaca.traces
 		{
 			throw new IllegalOperationError("addItem - only accept Obsel");
 		}
+        
+        public function addAll(ar:IList):void
+        {
+            var event:CollectionEvent =	new CollectionEvent(CollectionEvent.COLLECTION_CHANGE);
+            event.location = _obsels.length;
+            event.kind = CollectionEventKind.ADD;
+         
+            for each(var o:Obsel in ar)
+            {
+                event.items.push(o);
+                _obsels.push(o);
+            }
+
+            dispatchEvent(event);            
+        }
 		
 		public function getItemAt(index:int, prefetch:int=0):Object
 		{
@@ -129,7 +163,13 @@ package com.ithaca.traces
 					  )
 						arReturn.addItem(a.value);
 			
-			return arReturn;			
+            var sort:Sort = new Sort();
+            sort.fields = [new SortField()];
+            
+            arReturn.sort = sort;
+            arReturn.refresh();
+            
+            return arReturn;				
 		}
 		
 		public function listObselTypesBrute(noRepetition:Boolean = true):ArrayCollection
@@ -140,7 +180,13 @@ package com.ithaca.traces
 					if(	(!noRepetition || arReturn.getItemIndex(obs.obselType) < 0))
 						arReturn.addItem(obs.obselType)
 			
-			return arReturn;			
+            var sort:Sort = new Sort();
+            sort.fields = [new SortField("label")];
+            
+            arReturn.sort = sort;
+            arReturn.refresh();
+            
+            return arReturn;			
 		}
 		
 		public function listAttributeTypesBrute(noRepetition:Boolean = true,  correspondingTypes:Array = null, correspondingValues:Array = null):ArrayCollection
@@ -154,8 +200,19 @@ package com.ithaca.traces
 						&& (!correspondingValues || correspondingValues.indexOf(a.value) >= 0)
 					)
 							arReturn.addItem(a.attributeType)
-			
-			return arReturn;			
+		    
+            var sort:Sort = new Sort();
+            sort.fields = [new SortField("label")];
+            
+            arReturn.sort = sort;
+            arReturn.refresh();
+            
+			return arReturn;	
+            
+
+
+            
+
 		}
 		
 		
