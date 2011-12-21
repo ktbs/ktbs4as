@@ -23,6 +23,33 @@ package com.ithaca.traces
 
 		}
 		
+        public function compareObselsBegin(a:Object, b:Object):int
+        {
+            if((a as Obsel).begin < (b as Obsel).begin)
+                return -1;
+            else
+                return 1;
+        }
+        
+        public function sortByBegin():void
+        {
+            _obsels.sort(compareObselsBegin);
+        }
+        
+        
+        public function compareObselsEnd(a:Object, b:Object):int
+        {
+            if((a as Obsel).end < (b as Obsel).end)
+                return -1;
+            else
+                return 1;
+        }
+        
+        public function sortByEnd():void
+        {
+            _obsels.sort(compareObselsEnd);
+        }
+        
 		public function pop():Obsel
 		{
 			var poppedObsel:Obsel = _obsels.pop();
@@ -60,7 +87,20 @@ package com.ithaca.traces
             dispatchEvent(event);            
         }
         
-
+        public function pushFromOtherObselCollection(ar:Vector.<Obsel>):void
+        {
+            var event:CollectionEvent =	new CollectionEvent(CollectionEvent.COLLECTION_CHANGE);
+            event.location = _obsels.length;
+            event.kind = CollectionEventKind.ADD;
+            
+            for each(var o:Obsel in ar)
+            {
+                event.items.push(o);
+                _obsels.push(o);
+            }
+            
+            dispatchEvent(event);            
+        }
 		
 		// IList
 	

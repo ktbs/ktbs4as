@@ -25,7 +25,7 @@ package com.ithaca.traces.utils
 		public static var mainBase:Base;
 		public static var mainTrace:StoredTrace;
 		public static var mainModel:Model;
-		public static var modelStrict:Boolean = true;
+		public static var modelStrict:Boolean = false; // questionnable au moment du recueil, ca serait plus à faire au niveau de l'utilisation de la trace a posteriori
 		
 		public function LDTTrace()
 		{
@@ -517,11 +517,11 @@ package com.ithaca.traces.utils
 				
 				if(!obsType && modelStrict)
 				{
-					//error		
+					//Avertissement		
 				}
 				else
 				{
-						//TODO : model update with unknown obsel type
+					obsType = mainTrace.model.createObselType(typeUri);
 				}
 				
 				var attributes:Array = [];
@@ -529,6 +529,21 @@ package com.ithaca.traces.utils
 				for(var p:String in props)
 				{
 					var res:Resource = mainTrace.base.get(p);
+					
+					if(!res && !modelStrict) // if needed, we create undeclared attribute or relation types
+					{
+						var prop:* = props[p];
+						
+						if(props[p] is String && mainBase.get(props[p]) && mainBase.get(props[p]) is Obsel)
+							prop = mainBase.get(props[p])
+						
+						if(prop is Obsel)	 // then it is a relation
+							res = mainTrace.model.createRelationType(p);
+						else				//it is an attribute
+							res = mainTrace.model.createAttributeType(p); 
+					}
+					
+					
 					if(res && res is AttributeType)
 					{
 						attributes.push(new Attribute(res as AttributeType, props[p]));
@@ -546,10 +561,6 @@ package com.ithaca.traces.utils
 					else if(modelStrict)
 					{
 						//error
-					}
-					else if(res)
-					{
-						//TODO : model update with unknown attribute or relation type 	
 					}
 				}
 					
