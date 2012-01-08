@@ -20,21 +20,32 @@ package com.ithaca.traces.utils
 		private static var eol_regexp: RegExp = /\r/g;
 		
 		private static var logger:ILogger = Log.getLogger("com.ithaca.traces.RDFconverter");
+        
+        private static var bench_instanciate_obsel:Number = 0;
+        private static var bench_getting_type:Number = 0;
+        private static var bench_creating_type:Number = 0;        
+        private static var bench_getting_Attribut_type:Number = 0;
+        private static var bench_creating_Attribut_type:Number = 0;
 		
 		public function RDFconverter()
 		{
 		}
 		
-		public static function updateTraceBaseFromTurtle(ttl:String, theBase:Base, theModel:Model = null):Array
+		public static function updateTraceBaseFromTurtle(ttl:String, theBase:Base, theModel:Model = null):Object
 		{
 				//we split the ttl on each "." line (kind of an "end of instruction" in ttl (?))
 				var ar:Array = ttl.split("\n.\n");
 				
 				var arCreatedTraces:Array = [];
+                var arObjectObs:Array = [];
 				
 				if(!theModel)
 					theModel = theBase.createModel();
 				
+                var timeParsing:Number = 0;
+                var timeConstructing:Number = 0;
+                
+                var dg:Number = new Date().time;
 				for each (var l: String in ar)
 				{
 					//if(l.substr(0,7) != "@prefix")
@@ -42,7 +53,9 @@ package com.ithaca.traces.utils
 					l = l + "\n.\n"; //we (re)add the "." line at the end of instruction (because the "split function" has not include it)
 					
 					//for each "ttl instruction", we create a temporary object to hold all the obsel data
-					var objectObs:Object = getObjectifiedObselFromRDF(l);
+					var dp:Number = new Date().time;
+                    var objectObs:Object = getObjectifiedObselFromRDF(l);
+                    timeParsing += new Date().time - dp;
 					
 					
 					if(objectObs.type)
@@ -59,7 +72,7 @@ package com.ithaca.traces.utils
 								relatedTrace = correspondingTraces[0]; //To make better
 						}
 						
-						if(!relatedTrace) //if a corresponding obsel type has not been found in the trace model
+						if(!relatedTrace) //if a corresponding obsel type has not been found in an existing trace, we create it 
 						{
 							var newObsTraceUri:String = objectObs.trace.isUri ? objectObs.trace.value : null; 
 							
@@ -71,15 +84,92 @@ package com.ithaca.traces.utils
 							arCreatedTraces.push(relatedTrace);
 						}
 						
-						initObselFromData(objectObs,relatedTrace);
+                        var dc:Number = new Date().time;
+						initObselFromData(objectObs,relatedTrace, true, true);
+                        timeConstructing += new Date().time - dc;
+                        
+                        arObjectObs.push(objectObs);
 						
 					}
 
+                    
 				}
+                
+                var timeGen:Number = new Date().time - dg;
+                trace("general",timeGen,"parsing",timeParsing,"constructing",timeConstructing,"other",timeGen-timeParsing-timeConstructing);
 				
-				return arCreatedTraces;
+				return {traces:arCreatedTraces, object: arObjectObs};
 		}
-		
+
+        public static function updateTraceBaseFromObjects(arObjectObs:Array, theBase:Base, theModel:Model = null):Object
+        {
+
+            var arCreatedTraces:Array = [];
+            
+            bench_instanciate_obsel = 0;
+            bench_getting_type = 0;
+            bench_creating_type = 0;        
+            bench_getting_Attribut_type = 0;
+            bench_creating_Attribut_type = 0;
+            
+            if(!theModel)
+                theModel = theBase.createModel();
+            
+            var timeParsing:Number = 0;
+            var timeConstructing:Number = 0;
+            
+            var dg:Number = new Date().time;
+            for each (var objectObs: Object in arObjectObs)
+            { 
+                //for each "ttl instruction", we create a temporary object to hold all the obsel data
+
+                
+                
+                if(objectObs.type)
+                {
+                    var relatedTrace:StoredTrace = null;
+                    
+                    if(objectObs.trace.isUri) //
+                        relatedTrace = theBase.get(objectObs.trace.value) as StoredTrace;
+                    else
+                    {
+                        var correspondingTraces:Array = theBase.getTraceByName(objectObs.trace.value);
+                        
+                        if(correspondingTraces.length > 0)
+                            relatedTrace = correspondingTraces[0]; //To make better
+                    }
+                    
+                    if(!relatedTrace) //if a corresponding obsel type has not been found in an existing trace, we create it 
+                    {
+                        var newObsTraceUri:String = objectObs.trace.isUri ? objectObs.trace.value : null; 
+                        
+                        relatedTrace = theBase.createStoredTrace(theModel,null,null,newObsTraceUri);
+                        
+                        if(!objectObs.trace.isUri)
+                            relatedTrace.label = objectObs.trace.value;
+                        
+                        arCreatedTraces.push(relatedTrace);
+                    }
+                    
+                    var dc:Number = new Date().time;
+                    initObselFromData(objectObs,relatedTrace, true, true);
+                    timeConstructing += new Date().time - dc;
+                     
+                    
+                }
+                
+                
+            }
+            
+            var timeGen:Number = new Date().time - dg;
+            trace("general",timeGen,"constructing",timeConstructing,"other",timeGen-timeParsing-timeConstructing);
+            trace("instanciate obsel", bench_instanciate_obsel, "getting obsel type", bench_getting_type, 
+                "creating obsel type", bench_creating_type, "getting attribute type", bench_getting_Attribut_type, 
+                "creating attribute type",bench_creating_Attribut_type);
+            
+            return {traces:arCreatedTraces, object: arObjectObs};
+        }
+
 		
 		/**
 		 * Convert a value to its turtle representation
@@ -450,16 +540,20 @@ package com.ithaca.traces.utils
 			return obs;
 		}
 		
-		private static function initObselFromData(odata:Object, parentTrace:StoredTrace, updateModel:Boolean = true):Obsel
+		private static function initObselFromData(odata:Object, parentTrace:StoredTrace, updateModel:Boolean = true, considerTypeNameAsUri:Boolean = false):Obsel
 		{
 			//TODO : support updateModel with false value
 
+
+            
+            
 			if(odata.type && odata.hasOwnProperty("type") && odata.type)
 			{
 				//Obsel Type
 				var obsType:ObselType = null;
 				
-				if(odata.type.isUri) //
+                var bench_getting_type_timer:Number = new Date().time;
+				if(odata.type.isUri || considerTypeNameAsUri )
 					obsType = parentTrace.model.get(odata.type.value) as ObselType;
 				else
 				{
@@ -468,10 +562,12 @@ package com.ithaca.traces.utils
 					if(correspondingObselTypes.length > 0)
 						obsType = correspondingObselTypes[0]; //To make better
 				}
-				
+                bench_getting_type += new Date().time - bench_getting_type_timer;
+                
+                var bench_creating_type_timer:Number = new Date().time;
 				if(!obsType) //if a corresponding obsel type has not been found in the trace model
 				{
-					var newObsTypeUri:String = odata.type.isUri ? odata.type.value : null; 
+					var newObsTypeUri:String = (odata.type.isUri || considerTypeNameAsUri) ? odata.type.value : null; 
 					
 					if(updateModel)
 						obsType = parentTrace.model.createObselType(newObsTypeUri);
@@ -481,13 +577,16 @@ package com.ithaca.traces.utils
 					if(!odata.type.isUri)
 						obsType.label = odata.type.value;
 				}
+                bench_creating_type += new Date().time - bench_creating_type_timer;
 				
 				//Properties
 				var arAttributes:Array = [];
 				for each(var pdata:Object in odata.props)
 				{
 					var atType:AttributeType = null;
-					if(pdata.prop.isUri)
+                    
+                    var bench_getting_Attribut_type_timer:Number = new Date().time;
+					if(pdata.prop.isUri  || considerTypeNameAsUri )
 						atType = parentTrace.model.get(pdata.prop.value) as AttributeType;
 					else
 					{
@@ -496,10 +595,12 @@ package com.ithaca.traces.utils
 						if(correspondingAttributeTypes.length > 0)
 							atType = correspondingAttributeTypes[0]; //To make better
 					}
+                    bench_getting_Attribut_type += new Date().time - bench_getting_Attribut_type_timer;
 					
+                    var bench_creating_Attribut_type_timer:Number = new Date().time;
 					if(!atType) //if a corresponding attribute type  has not been found in the trace model
 					{
-						var newAtTypeUri:String = pdata.prop.isUri ? pdata.prop.value : null; 
+						var newAtTypeUri:String = (pdata.prop.isUri  || considerTypeNameAsUri) ? pdata.prop.value : null; 
 						
 						if(updateModel)
 							atType = parentTrace.model.createAttributeType(newAtTypeUri);
@@ -509,7 +610,8 @@ package com.ithaca.traces.utils
 						if(!pdata.prop.isUri)
 							atType.label = pdata.prop.value;
 					}
-					
+                    bench_creating_Attribut_type += new Date().time - bench_creating_Attribut_type_timer;
+                    
 					//We consolid the model
 					if(atType.domain != obsType)
 					{
@@ -522,9 +624,14 @@ package com.ithaca.traces.utils
 				}
 					
 
-				return (parentTrace.createObsel(obsType, odata.begin.value, odata.end.value, odata.uri, odata.subject.value, arAttributes));   
-			}
+                var bench_instanciate_obsel_timer:Number = new Date().time;
+				var valueToReturn:Obsel = parentTrace.createObsel(obsType, odata.begin.value, odata.end.value, odata.uri, odata.subject.value, arAttributes);   
+                bench_instanciate_obsel += new Date().time - bench_instanciate_obsel_timer;
+                return valueToReturn;
+            }
 			
+            
+            
 			return null;
 		}
 		

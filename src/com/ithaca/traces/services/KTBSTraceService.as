@@ -1,4 +1,4 @@
-package com.ithaca.traces.services
+		package com.ithaca.traces.services
 {
 	import com.ithaca.traces.Base;
 	import com.ithaca.traces.Ktbs;
@@ -337,7 +337,8 @@ package com.ithaca.traces.services
 			var traceUri:String = obs.trace.uri;
 			if(traceUri.charAt(traceUri.length-1) != "/")
 				traceUri += "/";
-				
+			
+			this.contentType="text/turtle";
 			this.url = obs.trace.uri;
 			return this.send(RDFconverter.toRDF(obs));
 		}
